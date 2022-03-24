@@ -7,11 +7,12 @@ import {
   InputRightElement,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Toast from "../../utils/Toast";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
+import { ChatContext } from "../../context/ChatContext";
 
 function Signup() {
   const [show, setShow] = useState(false);
@@ -22,6 +23,7 @@ function Signup() {
   const [passwordConfirm, setConfirmPassword] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoding] = useState(false);
+  const { setUser, setIsLoggedIn } = useContext(ChatContext);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ function Signup() {
           "https://api.cloudinary.com/v1_1/rifat/image/upload",
           data
         );
-        console.log(res.data);
+
         setImage(res.data.secure_url);
         setLoding(false);
       } catch (e) {
@@ -103,7 +105,9 @@ function Signup() {
       });
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", JSON.stringify(data.token));
+      setUser(data.user);
+      setIsLoggedIn(true);
+
       setLoding(false);
       navigate("/chats");
     } catch (e) {

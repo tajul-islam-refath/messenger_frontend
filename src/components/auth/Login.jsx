@@ -7,16 +7,18 @@ import {
   InputRightElement,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
+import { ChatContext } from "../../context/ChatContext";
 
 function Login() {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoding] = useState(false);
+  const { setUser, setIsLoggedIn } = useContext(ChatContext);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -47,8 +49,9 @@ function Login() {
         isClosable: true,
       });
 
+      setUser(data.user);
+      setIsLoggedIn(true);
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", JSON.stringify(data.token));
       setLoding(false);
       navigate("/chats");
     } catch (e) {
@@ -62,6 +65,7 @@ function Login() {
       setLoding(false);
     }
   };
+
   return (
     <VStack spacing="5px">
       <FormControl id="email" isRequired m="8px 0 8px 0">

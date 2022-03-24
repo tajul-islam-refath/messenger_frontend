@@ -11,6 +11,18 @@
   --red: indianred;
 }
 
+::-webkit-scrollbar{
+  width:0px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgb(136,136,136 , 0.281);
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:#555;
+}
+
 
 
 
@@ -25,6 +37,17 @@
 .chat-btn{
   background: linear-gradient(to right, var(--green), var(--blue)) !important;
   color:var(--light)
+}
+
+/* .chats{
+  background-color: var(--primary);
+} */
+.my-menu-list{
+  background-color: var(--tertiary) !important;
+}
+
+button:hover{
+  color: var(--primary);
 }
 
 

@@ -1,11 +1,12 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import { getSender } from "../../config/ChatLogics";
 import { ChatContext } from "../../context/ChatContext";
+import CreateGroupModel from "./CreateGroupModel";
 
-function MyChats() {
+function MyChats({ fetchAgain }) {
   const [loggedUser, setLoggedUser] = useState({});
   const { selectedChat, setSelectedChat, user, chats, setChats } =
     useContext(ChatContext);
@@ -21,7 +22,7 @@ function MyChats() {
       };
 
       const { data } = await axios.get("/api/chat/allChats", config);
-      // console.log(data);
+      // console.log(data.chats);
       setChats(data.chats);
     } catch (e) {
       console.error(e);
@@ -35,9 +36,10 @@ function MyChats() {
   };
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("user")));
+    setLoggedUser(user);
     getAllChats();
-  }, []);
+  }, [fetchAgain]);
+
   return (
     <Box
       d={{ base: selectedChat ? "none" : "flex", md: "flex" }}
@@ -58,13 +60,15 @@ function MyChats() {
         justifyContent="center"
         alignItems="center">
         MY Chats
-        <Button
-          d="flex"
-          ml={6}
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<AddIcon />}>
-          New Group Chat
-        </Button>
+        <CreateGroupModel>
+          <Button
+            d="flex"
+            ml={6}
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<AddIcon />}>
+            New Group Chat
+          </Button>
+        </CreateGroupModel>
       </Box>
       <Box
         d="flex"
@@ -77,9 +81,10 @@ function MyChats() {
         overflow="hidden">
         {chats.length > 0 ? (
           <Stack overflow="scroll">
-            {chats.map((chat, i) => (
+            {chats?.map((chat, i) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
+                d="flex"
                 cursor="pointer"
                 bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
                 color={selectedChat === chat ? "white" : "black"}
@@ -87,9 +92,18 @@ function MyChats() {
                 py={3}
                 borderRadius="lg"
                 key={i}>
+                {!chat.isGroupChat && (
+                  <Avatar
+                    mr={2}
+                    size="sm"
+                    cursor="pointer"
+                    // name={user.name}
+                    src={getSender(loggedUser, chat.users).avatar}
+                  />
+                )}
                 <Text>
                   {!chat.isGroupChat
-                    ? getSender(loggedUser, chat.users)
+                    ? getSender(loggedUser, chat.users).name
                     : chat.chatName}
                 </Text>
               </Box>

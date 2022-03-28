@@ -16,11 +16,16 @@ import { getSender } from "../../config/ChatLogics";
 import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
 import ScrollableChats from "./ScrollableChats";
+import io from "socket.io-client";
+
+const ENDPOINT = "http://localhost:8000";
+let latestSelectedChat, socket;
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState();
   const [loading, setLoading] = useState(false);
+  const [socketConnect, setSocketConnect] = useState(false);
   const { user, selectedChat, setSelectedChat } = useContext(ChatContext);
 
   const toast = useToast();
@@ -97,6 +102,17 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   useEffect(() => {
     getAllMessages();
   }, [selectedChat]);
+
+  useEffect(() => {
+    // socket connect
+    socket = io(ENDPOINT);
+    // send emit user
+    socket.emit("setup", user);
+    // accept response
+    socket.on("response", () => {
+      setSocketConnect(true);
+    });
+  }, []);
   return (
     <>
       {selectedChat ? (
@@ -135,6 +151,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
           <Box
             d="flex"
             flexDir="column"
+            justifyContent="flex-end"
             p={3}
             bg="#E8E8E8"
             w="100%"

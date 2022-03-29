@@ -4,6 +4,8 @@ import Chats from "./pages/Chats";
 import Home from "./pages/Home";
 
 function App() {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  console.log(`App: ${baseUrl}`);
   return (
     <div className="App">
       <Routes>

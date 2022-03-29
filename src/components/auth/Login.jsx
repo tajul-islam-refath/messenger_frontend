@@ -38,10 +38,13 @@ function Login() {
     }
 
     try {
-      const { data } = await axios.post("/api/user/login", {
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/api/user/login`,
+        {
+          email,
+          password,
+        }
+      );
       toast({
         title: "User log-in successfully",
         status: "success",

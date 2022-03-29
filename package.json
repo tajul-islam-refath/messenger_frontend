@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
-  "proxy": "http://localhost:8000",
+  "proxy": "https://messenger-2-mern-app.herokuapp.com",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^1.1.7",
@@ -17,6 +17,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",
+    "react-lottie": "^1.2.3",
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "react-scrollable-feed": "^1.3.1",

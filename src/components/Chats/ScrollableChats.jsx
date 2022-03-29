@@ -1,7 +1,12 @@
 import { Avatar, Tooltip } from "@chakra-ui/react";
 import { useContext } from "react";
 import ScrollableFeed from "react-scrollable-feed";
-import { isSameSender, isLastMessage } from "../../config/ChatLogics";
+import {
+  isSameSender,
+  isLastMessage,
+  isSameSenderMargin,
+  isSameUser,
+} from "../../config/ChatLogics";
 import { ChatContext } from "../../context/ChatContext";
 function ScrollableChats({ messages }) {
   const { user } = useContext(ChatContext);
@@ -28,31 +33,19 @@ function ScrollableChats({ messages }) {
                 </Tooltip>
               </>
             )}
-
-            {message.sender._id === user._id ? (
-              <span
-                style={{
-                  backgroundColor: "#BEE3F8",
-                  borderRadius: "20px",
-                  padding: "5px 15px",
-                  maxWidth: "75%",
-                  marginLeft: "auto",
-                  marginTop: "4px",
-                }}>
-                {message.text}
-              </span>
-            ) : (
-              <span
-                style={{
-                  backgroundColor: `${"#B9F5D0"}`,
-                  borderRadius: "20px",
-                  padding: "5px 15px",
-                  maxWidth: "75%",
-                  marginTop: "4px",
-                }}>
-                {message.text}
-              </span>
-            )}
+            <span
+              style={{
+                backgroundColor: `${
+                  message.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"
+                }`,
+                marginLeft: isSameSenderMargin(messages, message, i, user._id),
+                marginTop: isSameUser(messages, message, i, user._id) ? 3 : 10,
+                borderRadius: "20px",
+                padding: "5px 15px",
+                maxWidth: "75%",
+              }}>
+              {message.text}
+            </span>
           </div>
         ))}
     </ScrollableFeed>

@@ -17,8 +17,12 @@ import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
 import ScrollableChats from "./ScrollableChats";
 import io from "socket.io-client";
+import Lottie from "react-lottie";
+import annimationData from "../../annimations/86722-typing-animation.json";
 
-const ENDPOINT = "http://localhost:8000";
+const ENDPOINT = "https://messenger-2-mern-app.herokuapp.com";
+// const ENDPOINT = "http://localhost:8000";
+
 let latestSelectedChat, socket;
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
@@ -26,8 +30,18 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   const [newMessage, setNewMessage] = useState();
   const [loading, setLoading] = useState(false);
   const [socketConnect, setSocketConnect] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const { user, selectedChat, setSelectedChat } = useContext(ChatContext);
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: annimationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   const toast = useToast();
 
   const getAllMessages = async () => {
@@ -45,10 +59,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
         config
       );
 
-      console.log(data);
+      // console.log(data);
 
       setLoading(false);
       setMessages(data.messages);
+      socket.emit("join chat", selectedChat._id);
     } catch (e) {
       setLoading(false);
       console.error(e);
@@ -63,6 +78,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -81,9 +97,10 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
           config
         );
 
-        console.log(data);
+        // emit new message for backend
+        socket.emit("new message", data.message);
+        // console.log(data);
         setMessages([...messages, data.message]);
-        console.log(messages);
       } catch (e) {
         toast({
           title: "Error Occured!",
@@ -95,24 +112,70 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
       }
     }
   };
-  const typingHandler = (e) => {
-    setNewMessage(e.target.value);
-  };
-
-  useEffect(() => {
-    getAllMessages();
-  }, [selectedChat]);
 
   useEffect(() => {
     // socket connect
     socket = io(ENDPOINT);
     // send emit user
     socket.emit("setup", user);
-    // accept response
+    // socket connect
     socket.on("response", () => {
       setSocketConnect(true);
     });
+
+    // typing effect
+    socket.on("typing", () => {
+      setIsTyping(true);
+    });
+
+    socket.on("stop typing", () => {
+      console.log("stop typing");
+      setIsTyping(false);
+    });
   }, []);
+
+  useEffect(() => {
+    getAllMessages();
+    latestSelectedChat = selectedChat;
+  }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("message recieved", (newMessage) => {
+      if (
+        !latestSelectedChat ||
+        latestSelectedChat._id !== newMessage.chatId._id
+      ) {
+        //get notification
+      } else {
+        setMessages([...messages, newMessage]);
+      }
+    });
+  });
+
+  const typingHandler = (e) => {
+    setNewMessage(e.target.value);
+
+    if (!socketConnect) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+
+    let start = new Date().getTime();
+    let timeLength = 3000;
+
+    setTimeout(() => {
+      let currentTime = new Date().getTime();
+      let deffTime = currentTime - start;
+      if (deffTime >= timeLength && typing) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
+      }
+      console.log("called after 3 sec");
+    }, timeLength);
+  };
+
   return (
     <>
       {selectedChat ? (
@@ -173,6 +236,15 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
               </div>
             )}
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {isTyping && (
+                <div>
+                  <Lottie
+                    options={defaultOptions}
+                    width={90}
+                    style={{ marginLeft: 0 }}
+                  />
+                </div>
+              )}
               <Input
                 variant="filled"
                 bg="#E8E8E8"

@@ -65,7 +65,10 @@ function SideDrawer() {
         },
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/user?search=${search}`,
+        config
+      );
       setSearchResult(data.users);
       setLoding(false);
     } catch (e) {
@@ -91,7 +94,7 @@ function SideDrawer() {
       };
 
       const { data } = await axios.post(
-        `/api/chat/accessChat`,
+        `${process.env.REACT_APP_BASE_URL}/api/chat/accessChat`,
         { userId: id },
         config
       );

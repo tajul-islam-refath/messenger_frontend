@@ -57,7 +57,7 @@ function UpdateGroupChatModel({ fetchAgain, setFetchAgain, getAllMessages }) {
       };
 
       const { data } = await axios.put(
-        "/api/chat/removeFromGroup",
+        `${process.env.REACT_APP_BASE_URL}/api/chat/removeFromGroup`,
         {
           chatId: selectedChat._id,
           userId: deletedUser._id,
@@ -113,7 +113,7 @@ function UpdateGroupChatModel({ fetchAgain, setFetchAgain, getAllMessages }) {
       };
 
       const { data } = await axios.put(
-        "/api/chat/addInGroup",
+        `${process.env.REACT_APP_BASE_URL}/api/chat/addInGroup`,
         {
           chatId: selectedChat._id,
           userId: addedUser._id,
@@ -150,7 +150,7 @@ function UpdateGroupChatModel({ fetchAgain, setFetchAgain, getAllMessages }) {
       };
 
       const { data } = await axios.put(
-        "/api/chat/renameGroup",
+        `${process.env.REACT_APP_BASE_URL}/api/chat/renameGroup`,
         {
           chatId: selectedChat._id,
           chatName: groupChatName,
@@ -188,7 +188,10 @@ function UpdateGroupChatModel({ fetchAgain, setFetchAgain, getAllMessages }) {
           Authorization: "Bearer " + user.token,
         },
       };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/user?search=${search}`,
+        config
+      );
 
       // console.log(data.users);
 

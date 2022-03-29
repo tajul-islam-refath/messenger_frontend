@@ -20,7 +20,7 @@ import io from "socket.io-client";
 import Lottie from "react-lottie";
 import annimationData from "../../annimations/86722-typing-animation.json";
 
-const ENDPOINT = "https://messenger-2-mern-app.herokuapp.com";
+const ENDPOINT = process.env.REACT_APP_BASE_URL;
 // const ENDPOINT = "http://localhost:8000";
 
 let latestSelectedChat, socket;
@@ -55,7 +55,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
       };
 
       const { data } = await axios.get(
-        `/api/message/allMessages/${selectedChat._id}`,
+        `${process.env.REACT_APP_BASE_URL}/api/message/allMessages/${selectedChat._id}`,
         config
       );
 
@@ -89,7 +89,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
 
         setNewMessage("");
         const { data } = await axios.post(
-          "/api/message/sendMessage",
+          `${process.env.REACT_APP_BASE_URL}/api/message/sendMessage`,
           {
             text: newMessage,
             chatId: selectedChat._id,

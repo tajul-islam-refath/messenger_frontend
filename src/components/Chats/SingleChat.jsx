@@ -21,6 +21,7 @@ import Lottie from "react-lottie";
 import annimationData from "../../annimations/86722-typing-animation.json";
 
 const ENDPOINT = process.env.REACT_APP_BASE_URL;
+// console.log(ENDPOINT);
 // const ENDPOINT = "http://localhost:8000";
 
 let latestSelectedChat, socket;
@@ -32,7 +33,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   const [socketConnect, setSocketConnect] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const { user, selectedChat, setSelectedChat } = useContext(ChatContext);
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    useContext(ChatContext);
 
   const defaultOptions = {
     loop: true,
@@ -129,7 +131,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
     });
 
     socket.on("stop typing", () => {
-      console.log("stop typing");
+      // console.log("stop typing");
       setIsTyping(false);
     });
   }, []);
@@ -146,6 +148,17 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
         latestSelectedChat._id !== newMessage.chatId._id
       ) {
         //get notification
+        if (!notification.includes(newMessage)) {
+          setNotification([newMessage, ...notification]);
+          setFetchAgain(!fetchAgain);
+          console.log(newMessage);
+          toast({
+            title: "You get a new message",
+            status: "success",
+            duration: 1000,
+            isClosable: true,
+          });
+        }
       } else {
         setMessages([...messages, newMessage]);
       }
@@ -172,7 +185,6 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
         socket.emit("stop typing", selectedChat._id);
         setTyping(false);
       }
-      console.log("called after 3 sec");
     }, timeLength);
   };
 

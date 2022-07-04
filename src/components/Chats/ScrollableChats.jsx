@@ -11,7 +11,7 @@ import { ChatContext } from "../../context/ChatContext";
 function ScrollableChats({ messages }) {
   const { user } = useContext(ChatContext);
   return (
-    <ScrollableFeed>
+    <ScrollableFeed forceScroll={true}>
       {messages &&
         messages.map((message, i) => (
           <div style={{ display: "flex" }} key={message._id}>
